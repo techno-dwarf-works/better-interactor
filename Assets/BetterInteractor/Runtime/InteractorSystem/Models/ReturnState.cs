@@ -14,9 +14,14 @@ namespace Better.Interactor.Runtime.Models
 
         public bool Value { get; }
 
-        public void InvokeGaze()
+        public static ReturnState GetValid(IInteractable interactable)
         {
-            _interactable.InvokeGaze();
+            return new ReturnState(interactable, true);
+        }        
+        
+        public static ReturnState GetNonValid(IInteractable interactable)
+        {
+            return new ReturnState(interactable, false);
         }
     }
 }

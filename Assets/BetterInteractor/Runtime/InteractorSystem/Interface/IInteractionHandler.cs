@@ -1,9 +1,8 @@
 ﻿using Better.Interactor.Runtime.Models;
-using UnityEngine;
 
 namespace Better.Interactor.Runtime.Interface
 {
-    public interface IInteractor
+    public interface IInteractionHandler
     {
         /// <summary>
         /// PreInteract behavior for IInteractor controller.
@@ -28,10 +27,5 @@ namespace Better.Interactor.Runtime.Interface
         /// <param name="interactable"></param>
         /// <returns></returns>
         public ReturnState PostInteract(IInteractable interactable);
-    }
-
-    public interface IPlayerHead
-    {
-        public Transform HeadTransform { get; }
     }
 }

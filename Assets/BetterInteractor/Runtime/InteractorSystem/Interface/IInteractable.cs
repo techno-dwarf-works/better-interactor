@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using Better.Interactor.Runtime.Models;
+using UnityEngine;
 
 namespace Better.Interactor.Runtime.Interface
 {
     public interface IInteractable
     {
         public void InvokeGaze();
-        public Vector3 TrackedPosition { get; }
+
+        public Transform transform { get; }
+        OrientedBoundingBox GetBounds();
     }
 }
