@@ -94,10 +94,13 @@ namespace Better.Interactor.Runtime
             if (_playerContainer == null) return;
             var info = _groups.GetIntersecting(_playerContainer.Bounds);
 
-            var item = FindLookingAt(info.GetInRangeStacks(InteractionState.PreInteract));
+            var inRangeStacks = info.GetInRangeStacks(InteractionState.PreInteract);
+            Debug.Log($"{nameof(inRangeStacks)}: {inRangeStacks.Count}");
+            var item = FindLookingAt(inRangeStacks);
 
             if (item != null)
             {
+                Debug.Log($"PreInteractInternal: {item.Interactable.transform.name}");
                 PreInteractInternal(item);
 
                 //TODO: Move to New Input System
@@ -109,6 +112,7 @@ namespace Better.Interactor.Runtime
             }
 
             var outRangeStacks = info.GetOutRangeStacks(InteractionState.PostInteract);
+            Debug.Log($"{nameof(outRangeStacks)}: {outRangeStacks.Count}");
             foreach (var interactableStack in outRangeStacks)
             {
                 PostInteractInternal(interactableStack);
@@ -123,10 +127,10 @@ namespace Better.Interactor.Runtime
         /// <returns></returns>
         private InteractableStack FindLookingAt(List<InteractableStack> interactables)
         {
+            //TODO: Add range of looking
             if (interactables == null || interactables.Count <= 0) return null;
-            var playerHead = _playerContainer == null ? transform : _playerContainer.transform;
 
-            var stack = MathfIsLookingAt(interactables, playerHead);
+            var stack = MathfIsLookingAt(interactables, _playerContainer);
 
             if (ReferenceEquals(stack, null)) return null;
             return stack;
@@ -136,13 +140,16 @@ namespace Better.Interactor.Runtime
         /// Mathematical calculation if user looks on some object
         /// </summary>
         /// <param name="interactables"></param>
-        /// <param name="playerHead"></param>
-        private InteractableStack MathfIsLookingAt(List<InteractableStack> interactables, Transform playerHead)
+        /// <param name="playerContainer"></param>
+        private InteractableStack MathfIsLookingAt(List<InteractableStack> interactables, IPlayerContainer playerContainer)
         {
             InteractableStack stack = null;
             var dot = float.MinValue;
+            var playerHead = playerContainer.transform;
+            
             foreach (var interactableStack in interactables)
             {
+                if (!interactableStack.Intersects(playerContainer.Bounds)) continue;
                 var position = interactableStack.TrackedPosition;
                 var playerHeadPosition = playerHead.position;
                 var buffer = Vector3.Dot(playerHead.forward, (position - playerHeadPosition).normalized);

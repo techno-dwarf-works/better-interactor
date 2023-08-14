@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Better.Interactor.Runtime.Interface;
+using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
@@ -8,7 +9,7 @@ namespace Better.Interactor.Runtime.Models
     public class InteractableGroup : IEnumerable<InteractableStack>
     {
         private StackDictionary<IInteractable, InteractableStack> _interactable = new();
-        private OrientedBoundingBox groupBounds = new OrientedBoundingBox();
+        private TrackedOBB groupBounds = new TrackedOBB();
 
         public void AddInteractable(IInteractable interactable)
         {
@@ -19,7 +20,7 @@ namespace Better.Interactor.Runtime.Models
         public void RemoveInteractable(IInteractable interactable)
         {
             _interactable.Remove(interactable);
-            groupBounds = new OrientedBoundingBox(Vector3.zero, Vector3.zero, Quaternion.identity);
+            groupBounds = new TrackedOBB();
             foreach (var interactableStack in _interactable)
             {
                 groupBounds.Encapsulate(interactableStack.Interactable.GetBounds());
@@ -44,6 +45,7 @@ namespace Better.Interactor.Runtime.Models
 #if UNITY_EDITOR
         public void DrawGizmos()
         {
+            groupBounds.TrackBoxes();
             groupBounds.DrawGizmos();
         }
 #endif

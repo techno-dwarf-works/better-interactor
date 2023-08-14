@@ -1,5 +1,6 @@
 ﻿using System;
 using Better.Interactor.Runtime.Interface;
+using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
@@ -33,7 +34,7 @@ namespace Better.Interactor.Runtime.Models
         {
             return Interactable.GetBounds().Intersects(bounds);
         }
-        
+
 #if UNITY_EDITOR
         public void DrawGizmos()
         {
