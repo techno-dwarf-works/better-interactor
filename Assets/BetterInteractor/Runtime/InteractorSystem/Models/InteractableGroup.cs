@@ -29,6 +29,7 @@ namespace Better.Interactor.Runtime.Models
 
         public bool Intersects(OrientedBoundingBox bounds)
         {
+            groupBounds.TrackBoxes();
             return groupBounds.Intersects(bounds);
         }
 
@@ -41,13 +42,5 @@ namespace Better.Interactor.Runtime.Models
         {
             return _interactable.GetEnumerator();
         }
-
-#if UNITY_EDITOR
-        public void DrawGizmos()
-        {
-            groupBounds.TrackBoxes();
-            groupBounds.DrawGizmos();
-        }
-#endif
     }
 }

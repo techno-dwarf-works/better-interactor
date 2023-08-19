@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Better.Interactor.Runtime.Models;
 using UnityEngine;
 
@@ -9,6 +10,14 @@ namespace Better.Interactor.Runtime.Test
         public OrientedBoundingBox()
         {
         }
+
+        private static int[,] edges = new int[,]
+        {
+            // Define indices of vertices that form the edges of the bounding box
+            { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, // Bottom face
+            { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, // Top face
+            { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } // Connecting edges
+        };
 
         public abstract Vector3 LocalCenter { get; protected set; }
 
@@ -24,6 +33,7 @@ namespace Better.Interactor.Runtime.Test
 
         protected const float Half = 0.5f;
         private const int AxesCount = 3;
+        protected const int CornersCount = 8;
 
         //======================================================================
 
@@ -75,14 +85,16 @@ namespace Better.Interactor.Runtime.Test
 
         public bool Intersects(OrientedBoundingBox other)
         {
-            var myCorners = GetWorldBoxCorners();
-            var otherCorners = other.GetWorldBoxCorners();
+            var myCorners = new Vector3[CornersCount];
+            GetWorldBoxCornersNonAlloc(myCorners);
+            var otherCorners = new Vector3[CornersCount];
+            other.GetWorldBoxCornersNonAlloc(otherCorners);
 
             var axes = Transforms.rotation.ToAxes();
             var otherAxes = other.Transforms.rotation.ToAxes();
 
             // Check for separation along my axes
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < AxesCount; i++)
             {
                 if (!AxisTest(myCorners, otherCorners, axes[i]))
                 {
@@ -91,7 +103,7 @@ namespace Better.Interactor.Runtime.Test
             }
 
             // Check for separation along other's axes
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < AxesCount; i++)
             {
                 if (!AxisTest(myCorners, otherCorners, otherAxes[i]))
                 {
@@ -100,11 +112,11 @@ namespace Better.Interactor.Runtime.Test
             }
 
             // Check for cross products of pairs of edges
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < AxesCount; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < AxesCount; j++)
                 {
-                    Vector3 axis = Vector3.Cross(axes[i], otherAxes[j]);
+                    var axis = Vector3.Cross(axes[i], otherAxes[j]);
                     if (!AxisTest(myCorners, otherCorners, axis))
                     {
                         return false; // No intersection on this axis
@@ -115,17 +127,17 @@ namespace Better.Interactor.Runtime.Test
             return true; // Intersection detected on all axes
         }
 
-        private bool AxisTest(Vector3[] corners1, Vector3[] corners2, Vector3 axis)
+        private bool AxisTest(IReadOnlyList<Vector3> corners1, IReadOnlyList<Vector3> corners2, Vector3 axis)
         {
-            float min1 = float.MaxValue;
-            float max1 = float.MinValue;
-            float min2 = float.MaxValue;
-            float max2 = float.MinValue;
+            var min1 = float.MaxValue;
+            var max1 = float.MinValue;
+            var min2 = float.MaxValue;
+            var max2 = float.MinValue;
 
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < CornersCount; i++)
             {
-                float projection1 = Vector3.Dot(corners1[i], axis);
-                float projection2 = Vector3.Dot(corners2[i], axis);
+                var projection1 = Vector3.Dot(corners1[i], axis);
+                var projection2 = Vector3.Dot(corners2[i], axis);
 
                 min1 = Mathf.Min(min1, projection1);
                 max1 = Mathf.Max(max1, projection1);
@@ -133,17 +145,15 @@ namespace Better.Interactor.Runtime.Test
                 max2 = Mathf.Max(max2, projection2);
             }
 
-            float intervalDistance = Mathf.Max(min1, min2) - Mathf.Min(max1, max2);
+            var intervalDistance = Mathf.Max(min1, min2) - Mathf.Min(max1, max2);
             return intervalDistance <= 0;
         }
 
-
-        public Vector3[] GetBoxCorners()
+        public void GetLocalBoxCornersNonAlloc(Vector3[] corners)
         {
-            var corners = new Vector3[8];
             var halfSize = LocalExtents;
 
-            for (var i = 0; i < 8; i++)
+            for (var i = 0; i < CornersCount; i++)
             {
                 corners[i] = new Vector3(
                     (i & 1) == 0 ? -halfSize.x : halfSize.x,
@@ -151,70 +161,60 @@ namespace Better.Interactor.Runtime.Test
                     (i & 4) == 0 ? -halfSize.z : halfSize.z
                 );
             }
-
-            return corners;
         }
 
-        public Vector3[] GetWorldBoxCorners()
+        public void GetWorldBoxCornersNonAlloc(Vector3[] corners)
         {
-            Vector3[] corners = new Vector3[8];
-            Vector3 halfSize = LocalExtents;
+            GetLocalBoxCornersNonAlloc(corners);
 
-            for (int i = 0; i < 8; i++)
-            {
-                corners[i] = new Vector3(
-                    (i & 1) == 0 ? -halfSize.x : halfSize.x,
-                    (i & 2) == 0 ? -halfSize.y : halfSize.y,
-                    (i & 4) == 0 ? -halfSize.z : halfSize.z
-                );
-            }
-
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < CornersCount; i++)
             {
                 corners[i] = Transforms.MultiplyPoint3x4(corners[i] + LocalCenter);
             }
-
-            return corners;
         }
 
-#if UNITY_EDITOR
-        public void DrawGizmos()
+        public List<Vector3> GetIntersectionPoints(OrientedBoundingBox other)
         {
-            var originalGizmoMatrix = Gizmos.matrix;
-            Gizmos.matrix = Transforms;
+            List<Vector3> intersectionPoints = new List<Vector3>();
 
-            var halfSize = LocalExtents;
+            Vector3[] myCorners = new Vector3[CornersCount];
+            Vector3[] otherCorners = new Vector3[CornersCount];
+            GetWorldBoxCornersNonAlloc(myCorners);
+            other.GetWorldBoxCornersNonAlloc(otherCorners);
 
-            Gizmos.color = Color.yellow;
+            // Check for intersection on each edge of my box
+            for (int i = 0; i < myCorners.Length; i++)
+            {
+                Vector3 point = myCorners[i];
 
-            // Draw the wireframe box using Gizmos.DrawLine
-            var p0 = new Vector3(-halfSize.x, -halfSize.y, -halfSize.z);
-            var p1 = new Vector3(-halfSize.x, -halfSize.y, halfSize.z);
-            var p2 = new Vector3(halfSize.x, -halfSize.y, halfSize.z);
-            var p3 = new Vector3(halfSize.x, -halfSize.y, -halfSize.z);
-            var p4 = new Vector3(-halfSize.x, halfSize.y, -halfSize.z);
-            var p5 = new Vector3(-halfSize.x, halfSize.y, halfSize.z);
-            var p6 = new Vector3(halfSize.x, halfSize.y, halfSize.z);
-            var p7 = new Vector3(halfSize.x, halfSize.y, -halfSize.z);
+                if (other.ContainsPoint(point))
+                {
+                    intersectionPoints.Add(point);
+                }
+            }
 
-            Gizmos.DrawLine(p0, p1);
-            Gizmos.DrawLine(p1, p2);
-            Gizmos.DrawLine(p2, p3);
-            Gizmos.DrawLine(p3, p0);
+            // Check for intersection on each edge of other box
+            for (int i = 0; i < otherCorners.Length; i++)
+            {
+                Vector3 point = otherCorners[i];
 
-            Gizmos.DrawLine(p4, p5);
-            Gizmos.DrawLine(p5, p6);
-            Gizmos.DrawLine(p6, p7);
-            Gizmos.DrawLine(p7, p4);
+                if (ContainsPoint(point))
+                {
+                    intersectionPoints.Add(point);
+                }
+            }
 
-            Gizmos.DrawLine(p0, p4);
-            Gizmos.DrawLine(p1, p5);
-            Gizmos.DrawLine(p2, p6);
-            Gizmos.DrawLine(p3, p7);
-
-            Gizmos.matrix = originalGizmoMatrix;
+            return intersectionPoints;
         }
 
-#endif
+        private bool ContainsPoint(Vector3 point)
+        {
+            Vector3 localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
+            Vector3 halfExtents = LocalExtents;
+
+            return Mathf.Abs(localPoint.x) <= halfExtents.x &&
+                   Mathf.Abs(localPoint.y) <= halfExtents.y &&
+                   Mathf.Abs(localPoint.z) <= halfExtents.z;
+        }
     }
 }

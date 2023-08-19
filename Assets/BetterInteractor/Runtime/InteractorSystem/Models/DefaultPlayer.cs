@@ -19,13 +19,10 @@ namespace Better.Interactor.Runtime.Models
             InteractorSystem.AssignPlayer(this);
         }
 
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnValidate()
         {
             bounds.SetTransform(transform);
-            bounds.DrawGizmos();
         }
-#endif
         
         public OrientedBoundingBox Bounds => bounds;
     }

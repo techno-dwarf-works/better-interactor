@@ -33,20 +33,6 @@ namespace Better.Interactor.Runtime.Models
             return _group;
         }
 
-#if UNITY_EDITOR
-        public void DrawGizmos()
-        {
-            foreach (var group in _groups)
-            {
-                group.DrawGizmos();
-                foreach (var stack in group)
-                {
-                    stack.DrawGizmos();
-                }
-            }
-        }
-#endif
-
         public void AddInteractable(IInteractable interactable)
         {
             InteractableGroup selectedGroup = null;

@@ -31,18 +31,17 @@ namespace Better.Interactor.Runtime.Test
 
         public void TrackBoxes()
         {
-            // Calculate the combined bounds of the tracked boxes
-            var minPoint = Vector3.zero;
-            var maxPoint = Vector3.zero;
+            var minPoint = Vector3.positiveInfinity;
+            var maxPoint = Vector3.negativeInfinity;
 
+            var corners = new Vector3[CornersCount];
             for (var i = 0; i < boxes.Count; i++)
             {
                 // Transform the box corners to world space
-                var corners = boxes[i].GetBoxCorners();
-                for (var j = 0; j < corners.Length; j++)
+                boxes[i].GetWorldBoxCornersNonAlloc(corners);
+                for (var j = 0; j < CornersCount; j++)
                 {
-                    var box = boxes[i];
-                    var cornerWorld = box.Transforms.rotation * corners[j] + box.GetWorldCenter();
+                    var cornerWorld = corners[j];
                     minPoint = Vector3.Min(minPoint, cornerWorld);
                     maxPoint = Vector3.Max(maxPoint, cornerWorld);
                 }

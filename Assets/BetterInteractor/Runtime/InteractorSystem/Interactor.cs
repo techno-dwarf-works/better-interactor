@@ -12,6 +12,8 @@ namespace Better.Interactor.Runtime
     /// </summary>
     public class Interactor : MonoBehaviour
     {
+        [Range(0,360)]
+        [SerializeField] private float viewAngle = 20;
         private IPlayerContainer _playerContainer;
 
         private List<OnInteract> _onInteract = new List<OnInteract>();
@@ -78,15 +80,6 @@ namespace Better.Interactor.Runtime
             item.SetCurrentState(InteractionState.PostInteract);
         }
 
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (!Application.isPlaying) return;
-            _groups.DrawGizmos();
-        }
-#endif
-
         private void Update()
         {
             if (_isPause) return;
@@ -100,7 +93,7 @@ namespace Better.Interactor.Runtime
 
             if (item != null)
             {
-                Debug.Log($"PreInteractInternal: {item.Interactable.transform.name}");
+                Debug.Log($"PreInteractInternal: {item.Interactable.transform.name}", item.Interactable.transform);
                 PreInteractInternal(item);
 
                 //TODO: Move to New Input System
@@ -127,7 +120,6 @@ namespace Better.Interactor.Runtime
         /// <returns></returns>
         private InteractableStack FindLookingAt(List<InteractableStack> interactables)
         {
-            //TODO: Add range of looking
             if (interactables == null || interactables.Count <= 0) return null;
 
             var stack = MathfIsLookingAt(interactables, _playerContainer);
@@ -144,9 +136,12 @@ namespace Better.Interactor.Runtime
         private InteractableStack MathfIsLookingAt(List<InteractableStack> interactables, IPlayerContainer playerContainer)
         {
             InteractableStack stack = null;
-            var dot = float.MinValue;
             var playerHead = playerContainer.transform;
-            
+            var angleRadians = viewAngle * Mathf.Deg2Rad;
+
+            // Calculate the maximum dot product (cosine of the angle)
+            var maxDotProduct = Mathf.Cos(angleRadians);
+            var dot = maxDotProduct;
             foreach (var interactableStack in interactables)
             {
                 if (!interactableStack.Intersects(playerContainer.Bounds)) continue;

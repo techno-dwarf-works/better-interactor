@@ -34,12 +34,5 @@ namespace Better.Interactor.Runtime.Models
         {
             return Interactable.GetBounds().Intersects(bounds);
         }
-
-#if UNITY_EDITOR
-        public void DrawGizmos()
-        {
-            Interactable.GetBounds().DrawGizmos();
-        }
-#endif
     }
 }

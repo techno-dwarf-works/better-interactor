@@ -7,13 +7,13 @@ namespace Better.Interactor.Runtime.Test
     public class TransformOBB : OrientedBoundingBox
     {
         [SerializeField] private Transform transform;
-        [SerializeField] private Vector3 center;
+        [SerializeField] private Vector3 offset;
         [SerializeField] private Vector3 size;
 
         public override Vector3 LocalCenter
         {
-            get => center;
-            protected set => center = value;
+            get => offset;
+            protected set => offset = value;
         }
 
         public override Vector3 LocalExtents

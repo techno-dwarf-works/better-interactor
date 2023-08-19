@@ -18,13 +18,10 @@ namespace Better.Interactor.Runtime
         {
         }
 
-#if UNITY_EDITOR 
-        private void OnDrawGizmos()
+        private void OnValidate()
         {
             boundingBox.SetTransform(transform);
-            boundingBox.DrawGizmos();
         }
-#endif
 
         public override OrientedBoundingBox GetBounds()
         {
