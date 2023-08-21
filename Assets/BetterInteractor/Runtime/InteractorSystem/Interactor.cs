@@ -12,8 +12,6 @@ namespace Better.Interactor.Runtime
     /// </summary>
     public class Interactor : MonoBehaviour
     {
-        [Range(0,360)]
-        [SerializeField] private float viewAngle = 20;
         private IPlayerContainer _playerContainer;
 
         private List<OnInteract> _onInteract = new List<OnInteract>();
@@ -64,8 +62,7 @@ namespace Better.Interactor.Runtime
         /// <param name="item"></param>
         private void PreInteractInternal(InteractableStack item)
         {
-            item.Interactable.InvokeGaze();
-            item.SetCurrentState(InteractionState.PreInteract);
+            item.SetCurrentState(InteractionState.Interact);
             InvokeDelegate(item.Interactable, _onPreInteract);
         }
 
@@ -75,9 +72,18 @@ namespace Better.Interactor.Runtime
         /// <param name="item"></param>
         private void PostInteractInternal(InteractableStack item)
         {
-            item.Interactable.InvokeGaze();
+            item.SetCurrentState(InteractionState.None);
             InvokeDelegate(item.Interactable, _onPostInteract);
+        }
+        
+        /// <summary>
+        /// Internal PreInteract behaviour.
+        /// </summary>
+        /// <param name="item"></param>
+        private void InteractInternal(InteractableStack item)
+        {
             item.SetCurrentState(InteractionState.PostInteract);
+            InvokeDelegate(item.Interactable, _onInteract);
         }
 
         private void Update()
@@ -93,14 +99,28 @@ namespace Better.Interactor.Runtime
 
             if (item != null)
             {
-                Debug.Log($"PreInteractInternal: {item.Interactable.transform.name}", item.Interactable.transform);
-                PreInteractInternal(item);
+                item.Interactable.InvokeGaze();
+                
+                if(item.CurrentState != InteractionState.Interact)
+                {
+                    Debug.Log($"PreInteractInternal: {item.Interactable.transform.name}", item.Interactable.transform);
+                    PreInteractInternal(item);
+                }
 
                 //TODO: Move to New Input System
                 //User calls interaction with object
-                if (!Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    InvokeDelegate(item.Interactable, _onInteract);
+                    Debug.Log($"InteractInternal: {item.Interactable.transform.name}", item.Interactable.transform);
+                    InteractInternal(item);
+                }
+            }
+            else
+            {
+                var rangeStacks = info.GetInRangeStacks(InteractionState.PreInteract);
+                foreach (var interactableStack in rangeStacks)
+                {
+                    interactableStack.SetCurrentState(InteractionState.PreInteract);
                 }
             }
 
@@ -109,7 +129,6 @@ namespace Better.Interactor.Runtime
             foreach (var interactableStack in outRangeStacks)
             {
                 PostInteractInternal(interactableStack);
-                interactableStack.SetCurrentState(InteractionState.None);
             }
         }
 
@@ -137,7 +156,7 @@ namespace Better.Interactor.Runtime
         {
             InteractableStack stack = null;
             var playerHead = playerContainer.transform;
-            var angleRadians = viewAngle * Mathf.Deg2Rad;
+            var angleRadians = playerContainer.ViewAngle * Mathf.Deg2Rad;
 
             // Calculate the maximum dot product (cosine of the angle)
             var maxDotProduct = Mathf.Cos(angleRadians);

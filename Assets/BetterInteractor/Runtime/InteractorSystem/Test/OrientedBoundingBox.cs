@@ -7,17 +7,13 @@ namespace Better.Interactor.Runtime.Test
 {
     public abstract class OrientedBoundingBox
     {
+        protected const float Half = 0.5f;
+        private const int AxesCount = 3;
+        protected const int CornersCount = 8;
+        
         public OrientedBoundingBox()
         {
         }
-
-        private static int[,] edges = new int[,]
-        {
-            // Define indices of vertices that form the edges of the bounding box
-            { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, // Bottom face
-            { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, // Top face
-            { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } // Connecting edges
-        };
 
         public abstract Vector3 LocalCenter { get; protected set; }
 
@@ -30,10 +26,6 @@ namespace Better.Interactor.Runtime.Test
         {
             return Transforms.MultiplyPoint3x4(LocalCenter);
         }
-
-        protected const float Half = 0.5f;
-        private const int AxesCount = 3;
-        protected const int CornersCount = 8;
 
         //======================================================================
 
@@ -81,6 +73,22 @@ namespace Better.Interactor.Runtime.Test
             }
 
             LocalExtents = halfExtents * 2f;
+        }
+        
+        public Vector3 GetClosestPointOnBounds(Vector3 point)
+        {
+            Vector3 localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
+            Vector3 halfExtents = LocalExtents;
+
+            Vector3 closestPoint = localPoint;
+
+            for (int i = 0; i < 3; i++)
+            {
+                float distance = Mathf.Max(-halfExtents[i], Mathf.Min(halfExtents[i], localPoint[i]));
+                closestPoint[i] = distance;
+            }
+
+            return Transforms.MultiplyPoint3x4(closestPoint + LocalCenter);
         }
 
         public bool Intersects(OrientedBoundingBox other)
@@ -175,17 +183,17 @@ namespace Better.Interactor.Runtime.Test
 
         public List<Vector3> GetIntersectionPoints(OrientedBoundingBox other)
         {
-            List<Vector3> intersectionPoints = new List<Vector3>();
+            var intersectionPoints = new List<Vector3>();
 
-            Vector3[] myCorners = new Vector3[CornersCount];
-            Vector3[] otherCorners = new Vector3[CornersCount];
+            var myCorners = new Vector3[CornersCount];
+            var otherCorners = new Vector3[CornersCount];
             GetWorldBoxCornersNonAlloc(myCorners);
             other.GetWorldBoxCornersNonAlloc(otherCorners);
 
             // Check for intersection on each edge of my box
-            for (int i = 0; i < myCorners.Length; i++)
+            for (var i = 0; i < myCorners.Length; i++)
             {
-                Vector3 point = myCorners[i];
+                var point = myCorners[i];
 
                 if (other.ContainsPoint(point))
                 {
@@ -194,9 +202,9 @@ namespace Better.Interactor.Runtime.Test
             }
 
             // Check for intersection on each edge of other box
-            for (int i = 0; i < otherCorners.Length; i++)
+            for (var i = 0; i < otherCorners.Length; i++)
             {
-                Vector3 point = otherCorners[i];
+                var point = otherCorners[i];
 
                 if (ContainsPoint(point))
                 {
@@ -209,8 +217,8 @@ namespace Better.Interactor.Runtime.Test
 
         private bool ContainsPoint(Vector3 point)
         {
-            Vector3 localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
-            Vector3 halfExtents = LocalExtents;
+            var localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
+            var halfExtents = LocalExtents;
 
             return Mathf.Abs(localPoint.x) <= halfExtents.x &&
                    Mathf.Abs(localPoint.y) <= halfExtents.y &&

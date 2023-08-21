@@ -10,6 +10,6 @@ namespace Better.Interactor.Runtime.Interface
         public void InvokeGaze();
 
         public Transform transform { get; }
-        OrientedBoundingBox GetBounds();
+        public OrientedBoundingBox Bounds { get; }
     }
 }

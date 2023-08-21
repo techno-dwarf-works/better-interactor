@@ -10,6 +10,7 @@ namespace Better.Interactor.Runtime.Models
             { InteractionState.None, new List<InteractableStack>() },
             { InteractionState.PreInteract, new List<InteractableStack>() },
             { InteractionState.PostInteract, new List<InteractableStack>() },
+            { InteractionState.Interact, new List<InteractableStack>() },
         };
 
         private Dictionary<InteractionState, List<InteractableStack>> _outRangeStacks = new Dictionary<InteractionState, List<InteractableStack>>()
@@ -17,6 +18,7 @@ namespace Better.Interactor.Runtime.Models
             { InteractionState.None, new List<InteractableStack>() },
             { InteractionState.PreInteract, new List<InteractableStack>() },
             { InteractionState.PostInteract, new List<InteractableStack>() },
+            { InteractionState.Interact, new List<InteractableStack>() },
         };
 
         public void Clear()
@@ -24,10 +26,12 @@ namespace Better.Interactor.Runtime.Models
             _inRangeStacks[InteractionState.None].Clear();
             _inRangeStacks[InteractionState.PreInteract].Clear();
             _inRangeStacks[InteractionState.PostInteract].Clear();
+            _inRangeStacks[InteractionState.Interact].Clear();
             
             _outRangeStacks[InteractionState.None].Clear();
             _outRangeStacks[InteractionState.PreInteract].Clear();
             _outRangeStacks[InteractionState.PostInteract].Clear();
+            _outRangeStacks[InteractionState.Interact].Clear();
         }
 
         public List<InteractableStack> GetInRangeStacks(InteractionState state)
@@ -53,6 +57,9 @@ namespace Better.Interactor.Runtime.Models
                 case InteractionState.PostInteract:
                     _outRangeStacks[InteractionState.None].Add(stack);
                     break;
+                case InteractionState.Interact:
+                    _outRangeStacks[InteractionState.PostInteract].Add(stack);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -66,9 +73,12 @@ namespace Better.Interactor.Runtime.Models
                     _inRangeStacks[InteractionState.PreInteract].Add(stack);
                     break;
                 case InteractionState.PreInteract:
-                    _inRangeStacks[InteractionState.None].Add(stack);
+                    _inRangeStacks[InteractionState.PreInteract].Add(stack);
                     break;
                 case InteractionState.PostInteract:
+                    _inRangeStacks[InteractionState.PreInteract].Add(stack);
+                    break;
+                case InteractionState.Interact:
                     _inRangeStacks[InteractionState.PreInteract].Add(stack);
                     break;
                 default:

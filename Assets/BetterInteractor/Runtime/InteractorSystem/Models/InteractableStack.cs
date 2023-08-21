@@ -9,6 +9,7 @@ namespace Better.Interactor.Runtime.Models
     {
         None,
         PreInteract,
+        Interact,
         PostInteract
     }
 
@@ -32,7 +33,7 @@ namespace Better.Interactor.Runtime.Models
 
         public bool Intersects(OrientedBoundingBox bounds)
         {
-            return Interactable.GetBounds().Intersects(bounds);
+            return Interactable.Bounds.Intersects(bounds);
         }
     }
 }

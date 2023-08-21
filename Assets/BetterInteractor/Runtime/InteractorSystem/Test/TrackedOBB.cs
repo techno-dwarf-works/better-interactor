@@ -13,19 +13,19 @@ namespace Better.Interactor.Runtime.Test
 
         public override Vector3 LocalCenter
         {
-            get { return Vector3.zero; }
+            get => Vector3.zero;
             protected set { }
         }
 
         public override Vector3 LocalExtents
         {
-            get { return _extents; }
+            get => _extents;
             protected set => _extents = value;
         }
 
         public override Matrix4x4 Transforms
         {
-            get { return _transforms; }
+            get => _transforms;
             protected set => _transforms = value;
         }
 

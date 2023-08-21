@@ -9,6 +9,8 @@ namespace Better.Interactor.Runtime
     {
         [SerializeField] private TransformOBB boundingBox;
 
+        public override OrientedBoundingBox Bounds => boundingBox;
+
         private void Awake()
         {
             boundingBox.SetTransform(transform);
@@ -21,11 +23,6 @@ namespace Better.Interactor.Runtime
         private void OnValidate()
         {
             boundingBox.SetTransform(transform);
-        }
-
-        public override OrientedBoundingBox GetBounds()
-        {
-            return boundingBox;
         }
     }
 }

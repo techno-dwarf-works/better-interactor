@@ -7,7 +7,12 @@ namespace Better.Interactor.Runtime.Models
 {
     public class DefaultPlayer : MonoBehaviour, IPlayerContainer
     {
+        [Range(0,360)]
+        [SerializeField] private float viewAngle = 20;
         [SerializeField] private TransformOBB bounds;
+        
+        public OrientedBoundingBox Bounds => bounds;
+        public float ViewAngle => viewAngle;
 
         private void Awake()
         {
@@ -23,7 +28,5 @@ namespace Better.Interactor.Runtime.Models
         {
             bounds.SetTransform(transform);
         }
-        
-        public OrientedBoundingBox Bounds => bounds;
     }
 }

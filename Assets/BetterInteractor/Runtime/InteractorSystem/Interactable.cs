@@ -8,7 +8,7 @@ namespace Better.Interactor.Runtime
     public abstract class Interactable : MonoBehaviour, IInteractable
     {
         public abstract void InvokeGaze();
-        public abstract OrientedBoundingBox GetBounds();
+        public abstract OrientedBoundingBox Bounds { get; }
 
         private void OnEnable()
         {
