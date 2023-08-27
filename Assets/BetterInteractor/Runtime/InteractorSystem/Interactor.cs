@@ -164,7 +164,7 @@ namespace Better.Interactor.Runtime
             foreach (var interactableStack in interactables)
             {
                 if (!interactableStack.Intersects(playerContainer.Bounds)) continue;
-                var position = interactableStack.TrackedPosition;
+                var position = interactableStack.Interactable.Bounds.GetWorldCenter();
                 var playerHeadPosition = playerHead.position;
                 var buffer = Vector3.Dot(playerHead.forward, (position - playerHeadPosition).normalized);
                 if (buffer <= 0 || buffer < dot) continue;

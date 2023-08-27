@@ -11,6 +11,8 @@ namespace Better.Interactor.Runtime.Models
         private StackDictionary<IInteractable, InteractableStack> _interactable = new();
         private TrackedOBB groupBounds = new TrackedOBB();
 
+        public OrientedBoundingBox Bounds => groupBounds;
+
         public void AddInteractable(IInteractable interactable)
         {
             groupBounds.Encapsulate(interactable.Bounds);

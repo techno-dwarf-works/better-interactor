@@ -77,18 +77,19 @@ namespace Better.Interactor.Runtime.Test
         
         public Vector3 GetClosestPointOnBounds(Vector3 point)
         {
-            Vector3 localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
-            Vector3 halfExtents = LocalExtents;
+            var localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
+            var halfExtents = LocalExtents;
 
-            Vector3 closestPoint = localPoint;
+            var closestLocalPoint = localPoint;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < AxesCount; i++)
             {
-                float distance = Mathf.Max(-halfExtents[i], Mathf.Min(halfExtents[i], localPoint[i]));
-                closestPoint[i] = distance;
+                closestLocalPoint[i] = Mathf.Clamp(closestLocalPoint[i], -halfExtents[i], halfExtents[i]);
             }
 
-            return Transforms.MultiplyPoint3x4(closestPoint + LocalCenter);
+            var closestPoint = Transforms.MultiplyPoint3x4(closestLocalPoint);
+
+            return closestPoint;
         }
 
         public bool Intersects(OrientedBoundingBox other)

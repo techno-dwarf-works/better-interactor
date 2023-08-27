@@ -24,7 +24,6 @@ namespace Better.Interactor.Runtime.Models
         public InteractionState CurrentState { get; private set; }
 
         public IInteractable Interactable { get; }
-        public Vector3 TrackedPosition => Interactable.transform.position;
 
         public void SetCurrentState(InteractionState state)
         {

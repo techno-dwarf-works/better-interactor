@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Better.Interactor.Runtime.Interface;
+using Better.Interactor.Runtime.Models;
 using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
@@ -31,6 +32,17 @@ namespace Better.Interactor.Runtime
             var findObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToArray();
 
             DrawObjects(findObjects);
+
+            var group = new InteractableGroups();
+            foreach (var interactable in findObjects)
+            {
+                group.AddInteractable(interactable);
+            }
+
+            foreach (var groupGroup in group.Groups)
+            {
+                DrawBounds(groupGroup.Bounds);
+            }
 
             var players = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerContainer>().ToArray();
 
