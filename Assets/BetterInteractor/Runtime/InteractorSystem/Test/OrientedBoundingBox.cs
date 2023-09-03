@@ -10,7 +10,7 @@ namespace Better.Interactor.Runtime.Test
         protected const float Half = 0.5f;
         private const int AxesCount = 3;
         protected const int CornersCount = 8;
-        
+
         public OrientedBoundingBox()
         {
         }
@@ -72,9 +72,9 @@ namespace Better.Interactor.Runtime.Test
                 halfExtents[i] = Mathf.Max(halfExtents[i], distance1 + distance2);
             }
 
-            LocalExtents = halfExtents * 2f;
+            LocalExtents = halfExtents;
         }
-        
+
         public Vector3 GetClosestPointOnBounds(Vector3 point)
         {
             var localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
@@ -91,6 +91,74 @@ namespace Better.Interactor.Runtime.Test
 
             return closestPoint;
         }
+
+        public bool Raycast(Ray ray, out Vector3 hitPoint)
+        {
+            hitPoint = Vector3.zero;
+
+            // Transform the ray to local space
+            var inverseTransform = Transforms.inverse;
+            var localOrigin = inverseTransform.MultiplyPoint3x4(ray.origin);
+            var localDirection = inverseTransform.MultiplyVector(ray.direction);
+
+            var tMin = float.MinValue;
+            var tMax = float.MaxValue;
+
+            for (var i = 0; i < AxesCount; i++)
+            {
+                var axisOrigin = localOrigin[i];
+                var axisDirection = localDirection[i];
+                var halfExtent = LocalExtents[i];
+
+                if (Mathf.Abs(axisDirection) < Mathf.Epsilon)
+                {
+                    if (axisOrigin < -halfExtent || axisOrigin > halfExtent)
+                    {
+                        return false; // Ray is parallel to this axis and outside the box
+                    }
+                }
+                else
+                {
+                    var t1 = (-halfExtent - axisOrigin) / axisDirection;
+                    var t2 = (halfExtent - axisOrigin) / axisDirection;
+
+                    if (t1 > t2)
+                    {
+                        (t1, t2) = (t2, t1);
+                    }
+
+                    if (t1 > tMin)
+                    {
+                        tMin = t1;
+                    }
+
+                    if (t2 < tMax)
+                    {
+                        tMax = t2;
+                    }
+
+                    if (tMin > tMax)
+                    {
+                        return false; // Ray does not intersect the OBB
+                    }
+                }
+            }
+
+            // Intersection found, calculate the hit point in local space
+            var localHitPoint = localOrigin + localDirection * tMin;
+
+            // Transform the hit point back to world space
+            hitPoint = Transforms.MultiplyPoint3x4(localHitPoint);
+
+            if (!ContainsPoint(ray.origin) && Vector3.Dot(ray.direction, hitPoint - ray.origin) <= 0)
+            {
+                hitPoint = Vector3.zero;
+                return false;
+            }
+
+            return true;
+        }
+
 
         public bool Intersects(OrientedBoundingBox other)
         {

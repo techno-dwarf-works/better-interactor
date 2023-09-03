@@ -8,6 +8,5 @@ namespace Better.Interactor.Runtime.Interface
     {
         public Transform transform { get; }
         public OrientedBoundingBox Bounds { get; }
-        public float ViewAngle { get; }
     }
 }

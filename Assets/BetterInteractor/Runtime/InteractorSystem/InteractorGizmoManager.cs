@@ -7,54 +7,81 @@ using UnityEngine;
 
 namespace Better.Interactor.Runtime
 {
+    [ExecuteAlways]
     public class InteractorGizmoManager : MonoBehaviour
     {
-        [Min(0)] 
-        [SerializeField] private float intersectionPointsSize = 0.1f;
-        
-        [Range(4, 32)] 
-        [SerializeField] private int coneSegments = 16;
-        
-        [ColorUsage(false, false)]
-        [SerializeField] private Color boundsColor = Color.yellow;
-        
-        [ColorUsage(false, false)]
-        [SerializeField] private Color intersectionColor = Color.red;
-        [ColorUsage(false, false)]
-        [SerializeField] private Color closestColor = Color.green;
+        [Min(0)] [SerializeField] private float intersectionPointsSize = 0.1f;
 
-        private const float Two = 2f;
+        [ColorUsage(false, false)] [SerializeField]
+        private Color objectsColor = Color.yellow;
+
+        [ColorUsage(false, false)] [SerializeField]
+        private Color raycastColor = Color.cyan;
+
+        [ColorUsage(false, false)] [SerializeField]
+        private Color intersectionColor = Color.red;
+
+        [ColorUsage(false, false)] [SerializeField]
+        private Color closestColor = Color.green;
+
+        [ColorUsage(false, false)] [SerializeField]
+        private Color groupsColor = Color.blue;
+
+        [ColorUsage(false, false)] [SerializeField]
+        private Color playerColor = Color.magenta;
+
+        private IInteractable[] _findObjects = new IInteractable[0];
+        private IPlayerContainer[] _players = new IPlayerContainer[0];
+        private InteractableGroups _group = null;
 
 #if UNITY_EDITOR
+
+        private void OnEnable()
+        {
+            GatherReferences();
+        }
+
+        [ContextMenu("Gather References")]
+        private void GatherReferences()
+        {
+            _findObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToArray();
+            _players = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerContainer>().ToArray();
+
+            _group = new InteractableGroups();
+            foreach (var interactable in _findObjects)
+            {
+                _group.AddInteractable(interactable);
+            }
+        }
+
         public void OnDrawGizmos()
         {
             var color = Gizmos.color;
-            var findObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToArray();
 
-            DrawObjects(findObjects);
+            DrawObjects(_findObjects);
 
-            var group = new InteractableGroups();
-            foreach (var interactable in findObjects)
-            {
-                group.AddInteractable(interactable);
-            }
+            DrawGroups(_group);
 
-            foreach (var groupGroup in group.Groups)
-            {
-                DrawBounds(groupGroup.Bounds);
-            }
+            DrawPlayers(_players);
 
-            var players = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerContainer>().ToArray();
-
-            DrawPlayers(players);
-
-            DrawIntersections(findObjects, players);
+            DrawIntersections(_findObjects, _players);
 
             Gizmos.color = color;
         }
 
+        private void DrawGroups(InteractableGroups group)
+        {
+            if (group == null) return;
+            Gizmos.color = groupsColor;
+            foreach (var groupGroup in group.Groups)
+            {
+                DrawBounds(groupGroup.Bounds);
+            }
+        }
+
         private void DrawObjects(IInteractable[] findObjects)
         {
+            Gizmos.color = objectsColor;
             foreach (var bounds in findObjects)
             {
                 DrawBounds(bounds.Bounds);
@@ -63,10 +90,10 @@ namespace Better.Interactor.Runtime
 
         private void DrawPlayers(IPlayerContainer[] players)
         {
+            Gizmos.color = playerColor;
             foreach (var player in players)
             {
                 DrawBounds(player.Bounds);
-                DrawViewCone(player);
             }
         }
 
@@ -77,8 +104,20 @@ namespace Better.Interactor.Runtime
                 foreach (var player in players)
                 {
                     DrawIntersection(player, findObject);
-                    DrawClosestOnBounds(player, findObject);
+                    DrawRayCasts(player, findObject);
                 }
+            }
+        }
+
+        private void DrawRayCasts(IPlayerContainer player, IInteractable findObject)
+        {
+            var worldCenter = player.Bounds.GetWorldCenter();
+            if (findObject.Bounds.Raycast(new Ray(worldCenter, player.transform.forward), out var hitPoint))
+            {
+                Gizmos.color = raycastColor;
+                Gizmos.DrawLine(worldCenter, hitPoint);
+                Gizmos.color = intersectionColor;
+                Gizmos.DrawWireSphere(hitPoint, intersectionPointsSize);
             }
         }
 
@@ -94,6 +133,8 @@ namespace Better.Interactor.Runtime
                 {
                     Gizmos.DrawWireSphere(intersection, intersectionPointsSize);
                 }
+
+                DrawClosestOnBounds(player, findObject);
             }
         }
 
@@ -105,46 +146,8 @@ namespace Better.Interactor.Runtime
             Gizmos.DrawLine(position, onBounds);
         }
 
-        private void DrawViewCone(IPlayerContainer player)
-        {
-            Gizmos.color = Color.blue;
-            var halfAngleRadians = Mathf.Deg2Rad * player.ViewAngle / Two;
-            var viewConeHeight = player.Bounds.LocalExtents.z;
-            var radius = Mathf.Tan(halfAngleRadians) * viewConeHeight;
-
-            var containerTransform = player.transform;
-            var apex = containerTransform.position;
-
-            var forward = containerTransform.forward;
-            var right = containerTransform.right;
-            var up = containerTransform.up;
-
-            var baseCenter = apex + forward * viewConeHeight;
-
-            var prevPoint = apex + right * radius + forward * viewConeHeight;
-
-            for (var i = 1; i <= coneSegments; i++)
-            {
-                var angleStep = Two * Mathf.PI / coneSegments;
-                var angle = angleStep * i;
-
-                var circlePoint = baseCenter + (Mathf.Cos(angle) * right + Mathf.Sin(angle) * up) * radius;
-
-                Gizmos.DrawLine(prevPoint, circlePoint);
-
-                prevPoint = circlePoint;
-            }
-
-            // Draw lines from apex to base points
-            Gizmos.DrawLine(apex, baseCenter + right * radius);
-            Gizmos.DrawLine(apex, baseCenter - right * radius);
-            Gizmos.DrawLine(apex, baseCenter + up * radius);
-            Gizmos.DrawLine(apex, baseCenter - up * radius);
-        }
-
         private void DrawBounds(OrientedBoundingBox bounds)
         {
-            Gizmos.color = boundsColor;
             var originalGizmoMatrix = Gizmos.matrix;
             Gizmos.matrix = bounds.Transforms;
 

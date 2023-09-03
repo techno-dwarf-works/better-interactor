@@ -1,5 +1,4 @@
-﻿using System;
-using Better.Interactor.Runtime.Interface;
+﻿using Better.Interactor.Runtime.Interface;
 using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
@@ -12,7 +11,6 @@ namespace Better.Interactor.Runtime.Models
         [SerializeField] private TransformOBB bounds;
         
         public OrientedBoundingBox Bounds => bounds;
-        public float ViewAngle => viewAngle;
 
         private void Awake()
         {
