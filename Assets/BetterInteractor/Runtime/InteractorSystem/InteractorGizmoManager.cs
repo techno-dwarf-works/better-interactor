@@ -44,12 +44,13 @@ namespace Better.Interactor.Runtime
         [ContextMenu("Gather References")]
         private void GatherReferences()
         {
-            _findObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToArray();
-            _players = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerContainer>().ToArray();
+            _findObjects = FindObjectsOfType<MonoBehaviour>(false).OfType<IInteractable>().ToArray();
+            _players = FindObjectsOfType<MonoBehaviour>(false).OfType<IPlayerContainer>().ToArray();
 
             _group = new InteractableGroups();
             foreach (var interactable in _findObjects)
             {
+                _group.TrackBoxes();
                 _group.AddInteractable(interactable);
             }
         }
@@ -73,10 +74,12 @@ namespace Better.Interactor.Runtime
         {
             if (group == null) return;
             Gizmos.color = groupsColor;
-            foreach (var groupGroup in group.Groups)
+            foreach (var groupGroup in group)
             {
                 DrawBounds(groupGroup.Bounds);
             }
+            
+            group.TrackBoxes();
         }
 
         private void DrawObjects(IInteractable[] findObjects)

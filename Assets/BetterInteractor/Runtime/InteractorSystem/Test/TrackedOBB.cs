@@ -58,7 +58,6 @@ namespace Better.Interactor.Runtime.Test
             if (!boxes.Contains(other))
             {
                 boxes.Add(other);
-                TrackBoxes();
             }
         }
     }

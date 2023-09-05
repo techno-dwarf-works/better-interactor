@@ -19,6 +19,11 @@ namespace Better.Interactor.Runtime.Models
             _interactable.Push(interactable, new InteractableStack(interactable));
         }
 
+        public void TrackBoxes()
+        {
+            groupBounds.TrackBoxes();
+        }
+
         public void RemoveInteractable(IInteractable interactable)
         {
             _interactable.Remove(interactable);
@@ -31,13 +36,11 @@ namespace Better.Interactor.Runtime.Models
 
         public Vector3 GetClosestPointOnBounds(Vector3 point)
         {
-            groupBounds.TrackBoxes();
             return groupBounds.GetClosestPointOnBounds(point);
         }
 
         public bool Intersects(OrientedBoundingBox bounds)
         {
-            groupBounds.TrackBoxes();
             return groupBounds.Intersects(bounds);
         }
 
@@ -49,6 +52,11 @@ namespace Better.Interactor.Runtime.Models
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _interactable.GetEnumerator();
+        }
+
+        public float DistanceTo(OrientedBoundingBox interactableBounds)
+        {
+            return groupBounds.DistanceTo(interactableBounds);
         }
     }
 }

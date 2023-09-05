@@ -158,7 +158,33 @@ namespace Better.Interactor.Runtime.Test
 
             return true;
         }
+        
+        public float DistanceTo(OrientedBoundingBox other)
+        {
+            // Transform the center of the other OBB to local space of this OBB
+            var inverseTransform = Transforms.inverse;
+            var localCenterOther = inverseTransform.MultiplyPoint3x4(other.GetWorldCenter());
 
+            // Calculate the distance between the centers in local space
+            var distance = (LocalCenter - localCenterOther).magnitude;
+
+            // Account for the sizes of both OBBs
+            var halfExtentsThis = LocalExtents;
+            var halfExtentsOther = other.LocalExtents;
+
+            for (var i = 0; i < AxesCount; i++)
+            {
+                var axis = Transforms.GetColumn(i);
+                var projectionThis = Mathf.Abs(Vector3.Dot(axis, halfExtentsThis));
+                var projectionOther = Mathf.Abs(Vector3.Dot(axis, halfExtentsOther));
+                var separation = Mathf.Abs(Vector3.Dot(axis, localCenterOther - LocalCenter));
+
+                // Add the projections of both boxes along the axis and the separation
+                distance += Mathf.Max(0, projectionThis + projectionOther - separation);
+            }
+
+            return distance;
+        }
 
         public bool Intersects(OrientedBoundingBox other)
         {

@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Better.Interactor.Runtime.Interface;
 using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
 {
-    public class InteractableGroups
+    public class InteractableGroups : IEnumerable<InteractableGroup>
     {
         private static StacksGroup _interactableStacks = new StacksGroup();
         private readonly List<InteractableGroup> _groups = new List<InteractableGroup>();
         public int Count => _groups.Count;
-
-        public List<InteractableGroup> Groups => _groups;
 
         public StacksGroup GetIntersecting(OrientedBoundingBox bounds)
         {
@@ -35,18 +34,23 @@ namespace Better.Interactor.Runtime.Models
             return _interactableStacks;
         }
 
+        public void TrackBoxes()
+        {
+            foreach (var group in _groups)
+            {
+                group.TrackBoxes();
+            }
+        }
+
         public void AddInteractable(IInteractable interactable)
         {
             InteractableGroup selectedGroup = null;
-            var distance = 10f;
+            const float distance = 10f;
             foreach (var group in _groups)
             {
-                var position = interactable.Bounds.GetWorldCenter();
-                var closestPointOnBounds = group.GetClosestPointOnBounds(position);
-                var currentDistance = Vector3.Distance(closestPointOnBounds, position);
+                var currentDistance = group.DistanceTo(interactable.Bounds);
                 if (!(currentDistance <= distance)) continue;
                 selectedGroup = group;
-                distance = currentDistance;
             }
 
             if (selectedGroup == null)
@@ -56,6 +60,16 @@ namespace Better.Interactor.Runtime.Models
             }
             
             selectedGroup.AddInteractable(interactable);
+        }
+
+        IEnumerator<InteractableGroup> IEnumerable<InteractableGroup>.GetEnumerator()
+        {
+            return _groups.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _groups.GetEnumerator();
         }
     }
 }

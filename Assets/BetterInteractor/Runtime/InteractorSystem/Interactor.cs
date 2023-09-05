@@ -96,6 +96,7 @@ namespace Better.Interactor.Runtime
             if (_playerContainer == null) return;
             var info = _groups.GetIntersecting(_playerContainer.Bounds);
 
+            _groups.TrackBoxes();
             var inRangeStacks = info.GetInRangeStacks(InteractionState.PreInteract);
             Debug.Log($"{nameof(inRangeStacks)}: {inRangeStacks.Count}");
             var item = FindLookingAt(inRangeStacks);
