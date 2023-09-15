@@ -45,7 +45,6 @@ namespace Better.Interactor.Runtime
             var group = new InteractableGroups();
             foreach (var interactable in findObjects)
             {
-                group.TrackBoxes();
                 group.AddInteractable(interactable);
             }
 

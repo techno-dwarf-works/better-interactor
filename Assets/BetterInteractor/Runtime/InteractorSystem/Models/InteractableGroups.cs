@@ -17,6 +17,7 @@ namespace Better.Interactor.Runtime.Models
             _interactableStacks.Clear();
             foreach (var group in _groups)
             {
+                group.TrackBoxes();
                 if (!group.Intersects(bounds)) continue;
                 foreach (var stack in group)
                 {
@@ -34,21 +35,13 @@ namespace Better.Interactor.Runtime.Models
             return _interactableStacks;
         }
 
-        public void TrackBoxes()
-        {
-            foreach (var group in _groups)
-            {
-                group.TrackBoxes();
-            }
-        }
-
         public void AddInteractable(IInteractable interactable)
         {
             InteractableGroup selectedGroup = null;
-            const float distance = 10f;
+            const float distance = 100f;
             foreach (var group in _groups)
             {
-                var currentDistance = group.DistanceTo(interactable.Bounds);
+                var currentDistance = group.SqrDistanceTo(interactable.Bounds);
                 if (!(currentDistance <= distance)) continue;
                 selectedGroup = group;
             }

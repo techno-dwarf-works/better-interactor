@@ -50,7 +50,6 @@ namespace Better.Interactor.Runtime
             _group = new InteractableGroups();
             foreach (var interactable in _findObjects)
             {
-                _group.TrackBoxes();
                 _group.AddInteractable(interactable);
             }
         }
@@ -78,8 +77,6 @@ namespace Better.Interactor.Runtime
             {
                 DrawBounds(groupGroup.Bounds);
             }
-            
-            group.TrackBoxes();
         }
 
         private void DrawObjects(IInteractable[] findObjects)
