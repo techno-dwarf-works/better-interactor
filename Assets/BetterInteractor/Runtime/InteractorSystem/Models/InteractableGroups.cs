@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Better.Interactor.Runtime.BoundingBox;
 using Better.Interactor.Runtime.Interface;
-using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
@@ -17,7 +17,6 @@ namespace Better.Interactor.Runtime.Models
             _interactableStacks.Clear();
             foreach (var group in _groups)
             {
-                group.TrackBoxes();
                 if (!group.Intersects(bounds)) continue;
                 foreach (var stack in group)
                 {

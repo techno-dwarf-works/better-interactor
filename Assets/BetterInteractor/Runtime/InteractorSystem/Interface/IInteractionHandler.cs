@@ -28,4 +28,27 @@ namespace Better.Interactor.Runtime.Interface
         /// <returns></returns>
         public ReturnState PostInteract(IInteractable interactable);
     }
+
+    class InteractionHandler : IInteractionHandler
+    {
+        ReturnState IInteractionHandler.PreInteract(IInteractable interactable)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        ReturnState IInteractionHandler.Interact(IInteractable interactable)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        ReturnState IInteractionHandler.PostInteract(IInteractable interactable)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
+    class InteractionHandler<TInteractor, TInteractable> : InteractionHandler where TInteractable : IInteractable where TInteractor : IPlayerContainer
+    {
+        
+    }
 }

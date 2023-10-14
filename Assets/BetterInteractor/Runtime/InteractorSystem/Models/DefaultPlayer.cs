@@ -1,13 +1,11 @@
-﻿using Better.Interactor.Runtime.Interface;
-using Better.Interactor.Runtime.Test;
+﻿using Better.Interactor.Runtime.BoundingBox;
+using Better.Interactor.Runtime.Interface;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
 {
     public class DefaultPlayer : MonoBehaviour, IPlayerContainer
     {
-        [Range(0,360)]
-        [SerializeField] private float viewAngle = 20;
         [SerializeField] private TransformOBB bounds;
         
         public OrientedBoundingBox Bounds => bounds;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Better.Interactor.Runtime.Interface;
 using UnityEngine;
-using UnityEngine.CrashReportHandler;
 
 namespace Better.Interactor.Runtime
 {

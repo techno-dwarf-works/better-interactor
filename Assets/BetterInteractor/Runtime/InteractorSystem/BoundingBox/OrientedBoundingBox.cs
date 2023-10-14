@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Better.Interactor.Runtime.Models;
 using UnityEngine;
 
-namespace Better.Interactor.Runtime.Test
+namespace Better.Interactor.Runtime.BoundingBox
 {
     public abstract class OrientedBoundingBox
     {
-        protected const float Half = 0.5f;
-        private const int AxesCount = 3;
-        protected const int CornersCount = 8;
-
         public OrientedBoundingBox()
         {
         }
@@ -39,7 +34,7 @@ namespace Better.Interactor.Runtime.Test
             // Calculate new half extents
             var halfExtents = LocalExtents;
             var axes = Transforms.ToAxes();
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 var distance = Mathf.Abs(Vector3.Dot(axes[i], localPoint));
                 halfExtents[i] = Mathf.Max(halfExtents[i], distance);
@@ -60,7 +55,7 @@ namespace Better.Interactor.Runtime.Test
 
             var otherAxes = other.Transforms.ToAxes();
 
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 var axis = axes[i];
                 var distance1 = Mathf.Abs(Vector3.Dot(axis, localCenter));
@@ -82,7 +77,7 @@ namespace Better.Interactor.Runtime.Test
 
             var closestLocalPoint = localPoint;
 
-            for (int i = 0; i < AxesCount; i++)
+            for (int i = 0; i < OBBUtility.AxesCount; i++)
             {
                 closestLocalPoint[i] = Mathf.Clamp(closestLocalPoint[i], -halfExtents[i], halfExtents[i]);
             }
@@ -104,7 +99,7 @@ namespace Better.Interactor.Runtime.Test
             var tMin = float.MinValue;
             var tMax = float.MaxValue;
 
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 var axisOrigin = localOrigin[i];
                 var axisDirection = localDirection[i];
@@ -169,7 +164,7 @@ namespace Better.Interactor.Runtime.Test
             var centerOffset = LocalCenter - localCenterOther;
 
             var distanceVector = Vector3.zero;
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 var axis = Transforms.GetColumn(i);
 
@@ -200,16 +195,16 @@ namespace Better.Interactor.Runtime.Test
 
         public bool Intersects(OrientedBoundingBox other)
         {
-            var myCorners = new Vector3[CornersCount];
+            var myCorners = new Vector3[OBBUtility.CornersCount];
             GetWorldBoxCornersNonAlloc(myCorners);
-            var otherCorners = new Vector3[CornersCount];
+            var otherCorners = new Vector3[OBBUtility.CornersCount];
             other.GetWorldBoxCornersNonAlloc(otherCorners);
 
             var axes = Transforms.rotation.ToAxes();
             var otherAxes = other.Transforms.rotation.ToAxes();
 
             // Check for separation along my axes
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 if (!AxisTest(myCorners, otherCorners, axes[i]))
                 {
@@ -218,7 +213,7 @@ namespace Better.Interactor.Runtime.Test
             }
 
             // Check for separation along other's axes
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
                 if (!AxisTest(myCorners, otherCorners, otherAxes[i]))
                 {
@@ -227,9 +222,9 @@ namespace Better.Interactor.Runtime.Test
             }
 
             // Check for cross products of pairs of edges
-            for (var i = 0; i < AxesCount; i++)
+            for (var i = 0; i < OBBUtility.AxesCount; i++)
             {
-                for (var j = 0; j < AxesCount; j++)
+                for (var j = 0; j < OBBUtility.AxesCount; j++)
                 {
                     var axis = Vector3.Cross(axes[i], otherAxes[j]);
                     if (!AxisTest(myCorners, otherCorners, axis))
@@ -249,7 +244,7 @@ namespace Better.Interactor.Runtime.Test
             var min2 = float.MaxValue;
             var max2 = float.MinValue;
 
-            for (var i = 0; i < CornersCount; i++)
+            for (var i = 0; i < OBBUtility.CornersCount; i++)
             {
                 var projection1 = Vector3.Dot(corners1[i], axis);
                 var projection2 = Vector3.Dot(corners2[i], axis);
@@ -268,7 +263,7 @@ namespace Better.Interactor.Runtime.Test
         {
             var halfSize = LocalExtents;
 
-            for (var i = 0; i < CornersCount; i++)
+            for (var i = 0; i < OBBUtility.CornersCount; i++)
             {
                 corners[i] = new Vector3(
                     (i & 1) == 0 ? -halfSize.x : halfSize.x,
@@ -282,7 +277,7 @@ namespace Better.Interactor.Runtime.Test
         {
             GetLocalBoxCornersNonAlloc(corners);
 
-            for (var i = 0; i < CornersCount; i++)
+            for (var i = 0; i < OBBUtility.CornersCount; i++)
             {
                 corners[i] = Transforms.MultiplyPoint3x4(corners[i] + LocalCenter);
             }
@@ -292,8 +287,8 @@ namespace Better.Interactor.Runtime.Test
         {
             var intersectionPoints = new List<Vector3>();
 
-            var myCorners = new Vector3[CornersCount];
-            var otherCorners = new Vector3[CornersCount];
+            var myCorners = new Vector3[OBBUtility.CornersCount];
+            var otherCorners = new Vector3[OBBUtility.CornersCount];
             GetWorldBoxCornersNonAlloc(myCorners);
             other.GetWorldBoxCornersNonAlloc(otherCorners);
 
@@ -322,7 +317,7 @@ namespace Better.Interactor.Runtime.Test
             return intersectionPoints;
         }
 
-        private bool ContainsPoint(Vector3 point)
+        public virtual bool ContainsPoint(Vector3 point)
         {
             var localPoint = Transforms.inverse.MultiplyPoint3x4(point - LocalCenter);
             var halfExtents = LocalExtents;

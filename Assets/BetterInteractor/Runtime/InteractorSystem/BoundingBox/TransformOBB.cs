@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Better.Interactor.Runtime.Test
+namespace Better.Interactor.Runtime.BoundingBox
 {
     [Serializable]
     public class TransformOBB : OrientedBoundingBox

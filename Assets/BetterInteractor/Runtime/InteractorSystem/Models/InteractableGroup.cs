@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Better.Interactor.Runtime.BoundingBox;
 using Better.Interactor.Runtime.Interface;
-using Better.Interactor.Runtime.Test;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
@@ -16,13 +16,7 @@ namespace Better.Interactor.Runtime.Models
         public void AddInteractable(IInteractable interactable)
         {
             groupBounds.Encapsulate(interactable.Bounds);
-            TrackBoxes();
             _interactable.Push(interactable, new InteractableStack(interactable));
-        }
-
-        public void TrackBoxes()
-        {
-            groupBounds.TrackBoxes();
         }
 
         public void RemoveInteractable(IInteractable interactable)
@@ -33,19 +27,15 @@ namespace Better.Interactor.Runtime.Models
             {
                 groupBounds.Encapsulate(interactableStack.Interactable.Bounds);
             }
-
-            TrackBoxes();
         }
 
         public Vector3 GetClosestPointOnBounds(Vector3 point)
         {
-            TrackBoxes();
             return groupBounds.GetClosestPointOnBounds(point);
         }
 
         public bool Intersects(OrientedBoundingBox bounds)
         {
-            TrackBoxes();
             return groupBounds.Intersects(bounds);
         }
 
@@ -61,7 +51,6 @@ namespace Better.Interactor.Runtime.Models
 
         public float SqrDistanceTo(OrientedBoundingBox interactableBounds)
         {
-            TrackBoxes();
             return groupBounds.SqrDistanceTo(interactableBounds);
         }
     }

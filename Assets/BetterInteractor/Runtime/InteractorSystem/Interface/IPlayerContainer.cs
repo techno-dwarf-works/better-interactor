@@ -1,5 +1,5 @@
-﻿using Better.Interactor.Runtime.Models;
-using Better.Interactor.Runtime.Test;
+﻿using Better.Interactor.Runtime.BoundingBox;
+using Better.Interactor.Runtime.Models;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Interface

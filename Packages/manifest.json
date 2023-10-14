@@ -10,7 +10,7 @@
     "com.unity.timeline": "1.6.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.7.8",
-    "com.uurha.bettereditortools": "1.0.59",
+    "com.uurha.bettereditortools": "1.0.61",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -45,10 +45,11 @@
   },
   "scopedRegistries": [
     {
-      "name": "Arcueid Plugins",
+      "name": "Better Plugins",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.uurha"
+        "com.uurha",
+        "com.tdw"
       ]
     }
   ]

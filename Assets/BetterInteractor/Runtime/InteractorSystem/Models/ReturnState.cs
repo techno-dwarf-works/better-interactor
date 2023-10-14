@@ -1,27 +1,17 @@
-﻿using Better.Interactor.Runtime.Interface;
+﻿using UnityEngine;
 
 namespace Better.Interactor.Runtime.Models
 {
-    public struct ReturnState
+    public class ReturnState
     {
-        public ReturnState(IInteractable interactable, bool value)
-        {
-            _interactable = interactable;
-            Value = value;
-        }
-
-        private readonly IInteractable _interactable;
-
+        private static ReturnState ValidState { get; } = new ReturnState(true);
+        private static ReturnState NonValidState { get; } = new ReturnState(false);
+        
         public bool Value { get; }
 
-        public static ReturnState GetValid(IInteractable interactable)
+        private ReturnState(bool value)
         {
-            return new ReturnState(interactable, true);
-        }        
-        
-        public static ReturnState GetNonValid(IInteractable interactable)
-        {
-            return new ReturnState(interactable, false);
+            Value = value;
         }
     }
 }

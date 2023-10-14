@@ -94,6 +94,7 @@ namespace Better.Interactor.Runtime
             if (_isPause) return;
             if (_groups.Count <= 0) return;
             if (_playerContainer == null) return;
+            //TODO: Add layer check before getting group. Split Items by layers. Layers are matrix and IPlayerContainer can Interact only with same layer IInteractable or overlap in mask
             var info = _groups.GetIntersecting(_playerContainer.Bounds);
 
             var inRangeStacks = info.GetInRangeStacks(InteractionState.PreInteract);
