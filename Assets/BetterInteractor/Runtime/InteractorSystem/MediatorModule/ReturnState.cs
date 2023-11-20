@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Better.Interactor.Runtime.Models
+﻿namespace Better.Interactor.Runtime.MediatorModule
 {
     public class ReturnState
     {

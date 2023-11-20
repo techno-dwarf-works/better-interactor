@@ -1,4 +1,5 @@
-﻿using Better.Interactor.Runtime.Models;
+﻿using Better.Interactor.Runtime.MediatorModule;
+using Better.Interactor.Runtime.Models;
 
 namespace Better.Interactor.Runtime.Interface
 {
@@ -27,28 +28,5 @@ namespace Better.Interactor.Runtime.Interface
         /// <param name="interactable"></param>
         /// <returns></returns>
         public ReturnState PostInteract(IInteractable interactable);
-    }
-
-    class InteractionHandler : IInteractionHandler
-    {
-        ReturnState IInteractionHandler.PreInteract(IInteractable interactable)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        ReturnState IInteractionHandler.Interact(IInteractable interactable)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        ReturnState IInteractionHandler.PostInteract(IInteractable interactable)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    class InteractionHandler<TInteractor, TInteractable> : InteractionHandler where TInteractable : IInteractable where TInteractor : IPlayerContainer
-    {
-        
     }
 }

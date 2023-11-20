@@ -1,23 +1,22 @@
 {
-  "name": "com.uurha.{package_name}",
-  "displayName": "{display_name}",
+  "name": "com.tdw.betterinteractor",
+  "displayName": "Better Interactor",
   "version": "0.0.1",
   "unity": "2018.3",
   "description": " ",
   "dependencies": {
-    "com.uurha.somepackage": "0.1.0"
+    "com.uurha.betterattributes": "2.1.44"
   },
   "author": {
     "name": "Arcueid D'athemon",
-    "url": "https://github.com/uurha"
+    "url": "https://github.com/techno-dwarf-works"
   },
-  "changelogUrl": "https://github.com/uurha/{project_name}",
-  "documentationUrl": "https://github.com/uurha/{project_name}/tree/main#readme",
+  "changelogUrl": "https://github.com/techno-dwarf-works/better-interactor",
+  "documentationUrl": "https://github.com/techno-dwarf-works/better-interactor/tree/main#readme",
   "license": "MIT",
-  "licensesUrl":"https://github.com/uurha/{project_name}/blob/main/LICENSE",
+  "licensesUrl":"https://github.com/techno-dwarf-works/better-interactor/blob/main/LICENSE",
   "keywords": [
-    "keyword1",
-    "keyword2",
-    "keyword2"
+    "interaction",
+    "objects"
   ]
 }

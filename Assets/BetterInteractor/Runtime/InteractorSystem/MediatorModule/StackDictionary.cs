@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Better.Interactor.Runtime.Interface;
 
-namespace Better.Interactor.Runtime.Models
+namespace Better.Interactor.Runtime.MediatorModule
 {
     public class StackDictionary<TKey, TValue> : IEnumerable<TValue> where TKey : class
     {
@@ -17,6 +18,10 @@ namespace Better.Interactor.Runtime.Models
         }
 
         public int Count => _keyStack.Count;
+
+        public Dictionary<TKey, TValue>.KeyCollection Keys => _dictionary.Keys;
+
+        public Dictionary<TKey, TValue>.ValueCollection Values => _dictionary.Values;
 
         public void Push(TKey key, TValue value)
         {
@@ -80,6 +85,11 @@ namespace Better.Interactor.Runtime.Models
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            return _dictionary.TryGetValue(key, out value);
         }
     }
 }

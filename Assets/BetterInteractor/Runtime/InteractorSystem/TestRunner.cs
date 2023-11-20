@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Better.Interactor.Runtime.BoundingBox;
 using Better.Interactor.Runtime.Interface;
+using Better.Interactor.Runtime.MediatorModule;
 using Better.Interactor.Runtime.Models;
 using UnityEditor;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace Better.Interactor.Runtime
         {
             var tester = new SmallTester();
             var findObjects = Object.FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>().ToArray();
-            var players = Object.FindObjectsOfType<MonoBehaviour>().OfType<IPlayerContainer>().ToArray();
+            var players = Object.FindObjectsOfType<MonoBehaviour>().OfType<IInteractorContainer>().ToArray();
 
 
             //RunGroup(tester, findObjects);
@@ -42,7 +43,7 @@ namespace Better.Interactor.Runtime
         private static void RunGroup(SmallTester tester, IInteractable[] findObjects)
         {
             tester.Start();
-            var group = new InteractableGroups();
+            var group = new Groups();
             foreach (var interactable in findObjects)
             {
                 group.AddInteractable(interactable);
@@ -51,11 +52,11 @@ namespace Better.Interactor.Runtime
 
             tester.Stop();
 
-            tester.Report(nameof(InteractableGroups.AddInteractable), findObjects.Length);
+            tester.Report(nameof(Groups.AddInteractable), findObjects.Length);
             tester.Reset();
         }
 
-        private static void RunIntersects(SmallTester tester, IInteractable[] findObjects, IPlayerContainer[] players)
+        private static void RunIntersects(SmallTester tester, IInteractable[] findObjects, IInteractorContainer[] players)
         {
             tester.Start();
             foreach (var findObject in findObjects)
@@ -74,7 +75,7 @@ namespace Better.Interactor.Runtime
             tester.Reset();
         }
 
-        private static void RunGetIntersectionPoints(SmallTester tester, IInteractable[] findObjects, IPlayerContainer[] players)
+        private static void RunGetIntersectionPoints(SmallTester tester, IInteractable[] findObjects, IInteractorContainer[] players)
         {
             tester.Start();
             foreach (var findObject in findObjects)
@@ -93,7 +94,7 @@ namespace Better.Interactor.Runtime
             tester.Reset();
         }
 
-        private static void RunGetClosestPointOnBounds(SmallTester tester, IInteractable[] findObjects, IPlayerContainer[] players)
+        private static void RunGetClosestPointOnBounds(SmallTester tester, IInteractable[] findObjects, IInteractorContainer[] players)
         {
             tester.Start();
             foreach (var findObject in findObjects)
@@ -112,7 +113,7 @@ namespace Better.Interactor.Runtime
             tester.Reset();
         }
         
-        private static void RunRaycast(SmallTester tester, IInteractable[] findObjects, IPlayerContainer[] players)
+        private static void RunRaycast(SmallTester tester, IInteractable[] findObjects, IInteractorContainer[] players)
         {
             tester.Start();
             foreach (var findObject in findObjects)

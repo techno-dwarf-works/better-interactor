@@ -1,6 +1,4 @@
-﻿using System;
-using Better.Interactor.Runtime.BoundingBox;
-using Better.Interactor.Runtime.Models;
+﻿using Better.Interactor.Runtime.BoundingBox;
 using UnityEngine;
 
 namespace Better.Interactor.Runtime.Interface
@@ -11,5 +9,6 @@ namespace Better.Interactor.Runtime.Interface
 
         public Transform transform { get; }
         public OrientedBoundingBox Bounds { get; }
+        public int Mask { get; }
     }
 }

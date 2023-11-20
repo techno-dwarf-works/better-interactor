@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Better.Interactor.Runtime.Models
+namespace Better.Interactor.Runtime.BoundingBox
 {
     public static class OrientedBoundingBoxExtensions
     {

@@ -1,7 +1,10 @@
 {
     "name": "BetterInteractor.Runtime",
     "rootNamespace": "Better.Interactor",
-    "references": [],
+    "references": [
+        "GUID:35101f455c979e94c9a0a4793484b7fd",
+        "GUID:a59e3daedde9ca94bba45364d4ead25f"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

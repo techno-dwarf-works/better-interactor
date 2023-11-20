@@ -2,7 +2,10 @@
     "name": "BetterInteractor.Editor",
     "rootNamespace": "Better.Interactor",
     "references": [
-        "GUID:63d9837c6471cd24180304760e14f958"
+        "GUID:0c0d17d5f16d3cd45ada975aa568daa3",
+        "GUID:b6053aaf850e1f44ebbe8a655121831f",
+        "GUID:a59e3daedde9ca94bba45364d4ead25f",
+        "GUID:19891d5296046644cbc12fcf3702cca3"
     ],
     "includePlatforms": [
         "Editor"

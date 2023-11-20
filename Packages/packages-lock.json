@@ -38,7 +38,7 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.16",
+      "version": "3.0.26",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -155,26 +155,35 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.uurha.betterattributes": {
+      "version": "2.1.44",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.uurha.bettereditortools": "1.0.65"
+      },
+      "url": "https://package.openupm.com"
+    },
     "com.uurha.betterdatastructures": {
-      "version": "0.1.0",
-      "depth": 1,
+      "version": "0.1.1",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
     "com.uurha.bettereditortools": {
-      "version": "1.0.61",
-      "depth": 0,
+      "version": "1.0.65",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.uurha.betterdatastructures": "0.1.0",
-        "com.uurha.betterextensions": "1.1.92"
+        "com.uurha.betterdatastructures": "0.1.1",
+        "com.uurha.betterextensions": "1.1.96"
       },
       "url": "https://package.openupm.com"
     },
     "com.uurha.betterextensions": {
-      "version": "1.1.92",
-      "depth": 1,
+      "version": "1.1.96",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
